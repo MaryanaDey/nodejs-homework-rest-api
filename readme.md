@@ -29,3 +29,32 @@
 - `npm run start:dev` &mdash; старт сервера в режиме разработки (development)
 - `npm run lint` &mdash; запустить выполнение проверки кода с eslint, необходимо выполнять перед каждым PR и исправлять все ошибки линтера
 - `npm lint:fix` &mdash; та же проверка линтера, но с автоматическими исправлениями простых ошибок
+
+
+
+
+1 npm init -y
+2 добавить в gitignore node_modules/
+3 поставить npm i nodemon -D
+4 глобально поставиить  npm i -g yarn
+5 чтоб устаноить все пакеты yarn 
+6 Чтоб запускать скрипты yarn start:dev
+
+
+https://ibb.co/bXW72NJ   - list 
+https://ibb.co/RPhM7x5   - add
+https://ibb.co/0s716zW   - remove
+https://ibb.co/RPhM7x5    - id
+
+
+
+1 yarn
+   yarn start:dev
+2 yarn add express 
+3 импорт вебсервера const express = require("express");
+4 const app = express();  --  вебсервер
+5 app.listen(4000, () => console.log("Server running")); запуск сервера
+6 yarn start:dev
+
+7 npm i http errors
+8yarn add joi
