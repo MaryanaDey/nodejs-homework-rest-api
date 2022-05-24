@@ -22,16 +22,13 @@ router.get("/", async (req, res, next) => {
     }
 })
 
-router.get('/:contactId', async (req, res, next) => {
-  // res.json({ message: 'template message' })
+router.get("/:contactId", async (req, res, next) => {
+
     try {
         const result = await contacts.listContacts();
         res.json(result);
     } catch (error) {
         next(error);
-        // res.status(500).json({
-        //     message: "Server error"
-        // })
     }
 })
 
@@ -43,7 +40,7 @@ router.post("/", async (req, res, next) => {
         }
         const {name, email, phone} = req.body;
 
-        const result = await contacts.add(name, email,phone);
+        const result = await contacts.addContact (name, email,phone);
         res.status(201).json(result);
     } catch (error) {
         next(error);
@@ -51,35 +48,29 @@ router.post("/", async (req, res, next) => {
 })
 
 router.delete('/:contactId', async (req, res, next) => {
-  // res.json({ message: 'template message' })
    try {
-        const {id} = req.params;
-        const result = await contacts.removeById(id);
+        const {contactId} = req.params;
+        const result = await contacts.removeContact(contactId);
         if(!result){
             throw createError(404);
         }
-        // res.status(204).json({
-        //     message: "book deleted"
-        // });
         res.json({
             message: "book deleted"
         });
-        // res.json(result)
     } catch (error) {
         next(error);
     }
 })
 
-router.put('/:contactId', async (req, res, next) => {
-  // res.json({ message: 'template message' })
+router.put("/:contactId", async (req, res, next) => {
    try {
         const {error} = contactSchema.validate(req.body);
         if(error){
             throw createError(400, error.message);
         }
-        const {id} = req.params;
-        const {title, author} = req.body;
-        const result = await contacts.updateById(id, title, author);
+        const {contactId} = req.params;
+        const {name, email, phone} = req.body;
+        const result = await contacts.updateByContact(contactId, name, email, phone);
         if(!result){
             throw createError(404);
         }
