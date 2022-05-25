@@ -15,8 +15,6 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-
-
 router.get("/:contactId", async(req, res, next)=> {
     try {
         const {contactId} = req.params;
@@ -34,7 +32,6 @@ router.get("/:contactId", async(req, res, next)=> {
     };
 })
 
-
 router.post("/", async(req, res, next)=> {
     try {
         const {error} = schemas.add.validate(req.body);
@@ -47,7 +44,6 @@ router.post("/", async(req, res, next)=> {
         next(error);
     }
 });
-
 
 router.put("/:contactId", async(req, res, next) => {
     try {
@@ -71,7 +67,6 @@ router.put("/:contactId", async(req, res, next) => {
 });
 
 
-
 router.delete("/:contactId", async (req, res, next) => {
     try {
         const {contactId} = req.params;
@@ -90,8 +85,6 @@ router.delete("/:contactId", async (req, res, next) => {
         next(error);
     }
 })
-
-
 
 
 router.patch("/:contactId/favorite", async(req, res, next) => {
