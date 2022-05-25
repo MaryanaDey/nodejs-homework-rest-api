@@ -5,7 +5,6 @@ const { createError } = require("../../helpers");
 const router = express.Router();
 const { schemas, Contact } = require("../../models/contact");
 
-
 router.get("/", async (req, res, next) => {
     try {
         const result = await Contact.find({}, "-createdAt -updatedAt");
