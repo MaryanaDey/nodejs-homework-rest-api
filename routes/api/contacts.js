@@ -1,76 +1,111 @@
-const express = require('express')
-const Joi = require("joi");
-const router = express.Router()
-
+const express = require('express');
+const { isValidObjectId } = require("mongoose");
 const { createError } = require("../../helpers");
 
-const contacts = require("../../models/contacts");
-
-const contactSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required(),
-    phone: Joi.string().required()
-})
+const router = express.Router();
+const { schemas, Contact } = require("../../models/contact");
 
 
 router.get("/", async (req, res, next) => {
     try {
-        const result = await contacts.listContacts();
+        const result = await Contact.find({}, "-createdAt -updatedAt");
         res.json(result);
     } catch (error) {
         next(error);
     }
-})
+});
 
-router.get("/:contactId", async (req, res, next) => {
 
+
+router.get("/:contactId", async(req, res, next)=> {
     try {
-        const result = await contacts.listContacts();
+        const {contactId} = req.params;
+        const isValid = isValidObjectId(contactId);
+        if(!isValid){
+            throw createError(404);
+        }
+        const result = await Contact.findById(contactId, "-createdAt -updatedAt");
+        if(!result){
+            throw createError(404);
+        }
         res.json(result);
     } catch (error) {
         next(error);
-    }
+    };
 })
 
-router.post("/", async (req, res, next) => {
-  try {
-        const {error} = contactSchema.validate(req.body);
+
+router.post("/", async(req, res, next)=> {
+    try {
+        const {error} = schemas.add.validate(req.body);
         if(error){
             throw createError(400, error.message);
         }
-        const {name, email, phone} = req.body;
-
-        const result = await contacts.addContact (name, email,phone);
+        const result = await Contact.create(req.body);
         res.status(201).json(result);
     } catch (error) {
         next(error);
     }
-})
+});
 
-router.delete('/:contactId', async (req, res, next) => {
-   try {
+
+router.put("/:contactId", async(req, res, next) => {
+    try {
+        const {error} = schemas.add.validate(req.body);
+        if(error){
+            throw createError(400, error.message);
+        }
         const {contactId} = req.params;
-        const result = await contacts.removeContact(contactId);
+        const isValid = isValidObjectId(contactId);
+        if(!isValid){
+            throw createError(404);
+        }
+        const result = await Contact.findByIdAndUpdate(contactId, req.body, {new: true});
+        if(!result){
+            throw createError(404);
+        }
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+router.delete("/:contactId", async (req, res, next) => {
+    try {
+        const {contactId} = req.params;
+        const isValid = isValidObjectId(contactId);
+        if(!isValid){
+            throw createError(404);
+        }
+        const result = await Contact.findByIdAndRemove(contactId);
         if(!result){
             throw createError(404);
         }
         res.json({
-            message: "book deleted"
+            message: "contact deleted"
         });
     } catch (error) {
         next(error);
     }
 })
 
-router.put("/:contactId", async (req, res, next) => {
-   try {
-        const {error} = contactSchema.validate(req.body);
+
+
+
+router.patch("/:contactId/favorite", async(req, res, next) => {
+    try {
+        const {error} = schemas.updateFavorite.validate(req.body);
         if(error){
             throw createError(400, error.message);
         }
         const {contactId} = req.params;
-        const {name, email, phone} = req.body;
-        const result = await contacts.updateByContact(contactId, name, email, phone);
+        const isValid = isValidObjectId(contactId);
+        if(!isValid){
+            throw createError(404);
+        }
+        const result = await Contact.findByIdAndUpdate(contactId, req.body, {new: true});
         if(!result){
             throw createError(404);
         }
@@ -78,6 +113,6 @@ router.put("/:contactId", async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-})
+});
 
-module.exports = router
+module.exports = router;
