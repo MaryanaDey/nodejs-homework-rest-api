@@ -80,7 +80,7 @@ router.get("/current", auth, async (req, res) => {
 
 router.get("/logout", auth, async (req, res, next) => {
     try {
-         const { _id } = req.user;
+        const { _id } = req.user;
         await User.findByIdAndUpdate(_id, { token: null });
         res.status(204).send();
     } catch (error) {
