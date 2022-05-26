@@ -1,9 +1,20 @@
 const express = require('express');
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+
+
 const { isValidObjectId } = require("mongoose");
+
 const { createError } = require("../../helpers");
 
 const router = express.Router();
 const { schemas, Contact } = require("../../models/contact");
+
+// const {SECRET_KEY} = process.env;
+// const {auth} = require("../../middlewares");
+
+// POST /api/auth/signup
+// POST /api/auth/register
 
 router.get("/", async (req, res, next) => {
     try {
