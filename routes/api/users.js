@@ -34,7 +34,15 @@ router.post("/signup", async (req, res, next) => {
         await User.create({ email, password: hashPassword , avatarURL});
         res.status(201).json({
             user: {
-                email
+                status: "success",
+                code: 201,
+                data: {
+                    user: {
+                        email,
+                        subscription: "starter",
+                        avatarURL,
+                    },
+                },
             }
         })
     } catch (error) {
@@ -66,10 +74,12 @@ router.post("/login", async (req, res, next) => {
         const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
         await User.findByIdAndUpdate(user._id, { token });
         res.json({
+            status: "success",
+            code: 200,
             token,
-            user: {
-                email
-            }
+            data: {
+              token
+           }
         })
 
     } catch (error) {
