@@ -1,8 +1,13 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
 
-const {createError} = require("../../helpers");
+const { createError } = require("../../helpers");
+
+const {auth, upload} = require("../../middlewares");
 
 const { User, schemas } = require("../../models/user");
 
@@ -10,7 +15,8 @@ const router = express.Router();
 
 const { SECRET_KEY } = process.env;
 
-const { auth } = require("../../middlewares");
+const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
+
 
 router.post("/signup", async (req, res, next) => {
     try {
@@ -24,10 +30,19 @@ router.post("/signup", async (req, res, next) => {
             throw createError(409, "Email already exist");
         }
         const hashPassword = await bcrypt.hash(password, 10);
-        await User.create({ email, password: hashPassword });
+        const avatarURL = gravatar.url(email);
+        await User.create({ email, password: hashPassword , avatarURL});
         res.status(201).json({
             user: {
-                email
+                status: "success",
+                code: 201,
+                data: {
+                    user: {
+                        email,
+                        subscription: "starter",
+                        avatarURL,
+                    },
+                },
             }
         })
     } catch (error) {
@@ -59,10 +74,12 @@ router.post("/login", async (req, res, next) => {
         const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
         await User.findByIdAndUpdate(user._id, { token });
         res.json({
+            status: "success",
+            code: 200,
             token,
-            user: {
-                email
-            }
+            data: {
+              token
+           }
         })
 
     } catch (error) {
@@ -88,5 +105,25 @@ router.get("/logout", auth, async (req, res, next) => {
     }
    
 })
+
+router.patch("/avatars", auth, upload.single("avatar"), async(req, res, next)=> {
+    try {
+        const {_id: id} = req.user;
+        const {originalname, path: tempUpload} = req.file;
+        const [extension] = originalname.split(".").reverse();
+        const fileName = `${id}.${extension}`;
+        const resultUpload = path.join(avatarsDir, fileName);
+        await fs.rename(tempUpload, resultUpload);
+        const avatarURL = path.join("avatars", fileName);
+        await User.findByIdAndUpdate(id, {avatarURL});
+        res.json({
+            avatarURL
+        });
+    } catch (error) {
+        await fs.unlink(req.file.path);
+        next(error);
+    }
+})
+
 
 module.exports = router;
