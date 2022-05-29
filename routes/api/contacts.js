@@ -8,7 +8,7 @@ const { isValidObjectId } = require("mongoose");
 const { createError } = require("../../helpers");
 
 const router = express.Router();
-const { schemas, Contact } = require("../../models/contact");
+const { schemas, Contact } = require("../../models/Contact");
 
 // const {SECRET_KEY} = process.env;
 const {auth} = require("../../middlewares");
